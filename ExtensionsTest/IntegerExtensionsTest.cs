@@ -15,7 +15,7 @@ namespace Reevo.Unbroken.ExtensionsTest
             int j = 0;
             6.UpTo(12).ForEach(i => { data[j++] = i; });
 
-            Assert.AreSame(result, data);   // AreEqual
+            Assert.AreEqual(result, data);   // AreEqual
         }
     }
 }

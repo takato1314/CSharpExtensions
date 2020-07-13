@@ -6,10 +6,7 @@ namespace Reevo.Unbroken.Extensions
 {
     public static class ListExtensions
     {
-        public static IList<TSource> Clone<TSource>(this IList<TSource> enumerable) where TSource : ICloneable
-        {
-            return enumerable.Select(item => (TSource)item.Clone()).ToList();
-        }
+        #region Get
 
         public static bool TryGet<TSource>(this IList<TSource> enumerable, Func<TSource, bool> predicate, out IList<TSource> result)
         {
@@ -24,7 +21,7 @@ namespace Reevo.Unbroken.Extensions
 
         public static bool TryGetSingle<TSource>(this IList<TSource> enumerable, Func<TSource, bool> predicate, out TSource result)
         {
-            if (enumerable.Any(predicate) && enumerable.Where(predicate).Count() == 1)
+            if (enumerable.Any(predicate) && enumerable.Count(predicate) == 1)
             {
                 result = enumerable.Single(predicate);
                 return true;
@@ -42,8 +39,11 @@ namespace Reevo.Unbroken.Extensions
             }
             result = default(TSource);
             return false;
-        }       
+        }
 
+        #endregion
+
+        #region Delete
         /// <summary>
         ///     Remove all elements matching a predicate from this list.
         ///     NOTE: this has surprising behaviour when called on an ObservableCollection, since the CollectionChanged event
@@ -133,6 +133,15 @@ namespace Reevo.Unbroken.Extensions
             return count - 1;
         }
 
+        #endregion
+
+        #region Misc
+
+        public static IList<TSource> Clone<TSource>(this IList<TSource> enumerable) where TSource : ICloneable
+        {
+            return enumerable.Select(item => (TSource)item.Clone()).ToList();
+        }
+
         /// <summary>
         /// Split generic list into multiple lists with a max size.
         /// Result lists are filled up to max size, as long as elements are left.
@@ -194,5 +203,28 @@ namespace Reevo.Unbroken.Extensions
 
             return result;
         }
+
+        /// <summary>
+        /// Add a unique item into the <see cref="IList{T}"/> if it does not exists.
+        /// </summary>
+        /// <param name="source">Source list</param>
+        /// <param name="item">Item to be added</param>
+        /// <param name="equality">Uses <see cref="StringComparer"/> as the default <see cref="IEqualityComparer{T}"/>. Please provide custom implementation for custom type T</param>
+        public static void AddDistinct<T>(this IList<T> source, T item, IEqualityComparer<T> equality = null)
+        {
+            if (source.IsNullOrEmpty())
+            {
+                return;
+            }
+
+            // Uses 
+            var notFoundPredicate = source.Contains(item, equality ?? (IEqualityComparer<T>) StringComparer.CurrentCultureIgnoreCase);
+            if (!notFoundPredicate)
+            {
+                source.Add(item);
+            }
+        }
+
+        #endregion
     }
 }

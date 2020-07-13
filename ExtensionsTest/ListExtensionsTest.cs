@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Reevo.Unbroken.Extensions;
@@ -42,9 +43,53 @@ namespace Reevo.Unbroken.ExtensionsTest
         }
 
         [Test]
-        public void FilterTest()
+        public void AddDistinct_AddUniqueStringItem_WillAddIntoList()
         {
-            
+            // Arrange
+            var item = "Deus";
+            var list = new List<string>{ "Alex", "Bob", "Cynthia" };
+
+            // Act
+            list.AddDistinct(item);
+
+            // Assert
+            var count = list.Count(_ => _.Equals(item, StringComparison.CurrentCultureIgnoreCase));
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void AddDistinct_AddDuplicateStringItem_WontAddIntoList()
+        {
+            // Arrange
+            var item = "alex";
+            var list = new List<string> { "Alex", "Bob", "Cynthia" };
+
+            // Act
+            list.AddDistinct(item);
+
+            // Assert
+            var count = list.Count(_ => _.Equals(item, StringComparison.CurrentCultureIgnoreCase));
+            Assert.AreEqual(1, count);
+        }
+
+        [Test, Ignore("Require to implement custom Comparer")]
+        public void AddDistinct_AddDuplicateComplexTestObjectItem_WontAddIntoList()
+        {
+            // Arrange
+            var item = "alex";
+            var list = new List<TestObject>
+            {
+                new TestObject { StringProperty = "Alex" },
+                new TestObject { StringProperty = "Bob" },
+                new TestObject { StringProperty = "Cynthia" }
+            };
+
+            // Act
+            list.AddDistinct(new TestObject {StringProperty = item});
+
+            // Assert
+            var count = list.Count(_ => _.StringProperty.Equals(item, StringComparison.CurrentCultureIgnoreCase));
+            Assert.AreEqual(1, count);
         }
     }
 }
