@@ -212,7 +212,7 @@ namespace Reevo.Unbroken.Extensions
         /// <param name="equality">Uses <see cref="StringComparer"/> as the default <see cref="IEqualityComparer{T}"/>. Please provide custom implementation for custom type T</param>
         public static void AddDistinct<T>(this IList<T> source, T item, IEqualityComparer<T> equality = null)
         {
-            if (source.IsNullOrEmpty())
+            if (source == null)
             {
                 return;
             }
